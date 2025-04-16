@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Volunteer Opportunities</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    .card {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      padding: 10px;
+    }
+    button {
+      padding: 8px 16px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Available Volunteer Activities</h2>
+  <div id="activityList"></div>
+
+  <script>
+    const container = document.getElementById('activityList');
+    const activities = JSON.parse(localStorage.getItem('activities')) || [];
+
+    activities.forEach(activity => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <h3>${activity.name}</h3>
+        <p><strong>Type:</strong> ${activity.type}</p>
+        <p><strong>Description:</strong> ${activity.description}</p>
+        <p><strong>Requirements:</strong> ${activity.requirements}</p>
+        <p><strong>Location:</strong> ${activity.location}</p>
+        <a href="${activity.applyLink}" target="_blank">
+          <button>Apply</button>
+        </a>
+      `;
+      container.appendChild(card);
+    });
+  </script>
+</body>
+</html>

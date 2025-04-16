@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin - Post Activity</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    input, textarea { display: block; width: 100%; margin-bottom: 10px; padding: 8px; }
+    button { padding: 10px 20px; }
+  </style>
+</head>
+<body>
+  <h2>Post a Volunteer Opportunity</h2>
+  <form id="activityForm">
+    <input type="text" id="name" placeholder="Activity Name" required />
+    <input type="text" id="type" placeholder="Volunteer Type" required />
+    <textarea id="description" placeholder="Description" required></textarea>
+    <input type="text" id="requirements" placeholder="Requirements" />
+    <input type="text" id="location" placeholder="Location" required />
+    <input type="url" id="applyLink" placeholder="Application Link (e.g. https://...)" required />
+    <button type="submit">Post Activity</button>
+  </form>
+
+  <script>
+    const form = document.getElementById('activityForm');
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const activity = {
+        name: form.name.value,
+        type: form.type.value,
+        description: form.description.value,
+        requirements: form.requirements.value,
+        location: form.location.value,
+        applyLink: form.applyLink.value
+      };
+
+      // Store in localStorage
+      const existing = JSON.parse(localStorage.getItem('activities')) || [];
+      existing.push(activity);
+      localStorage.setItem('activities', JSON.stringify(existing));
+
+      alert('Activity posted!');
+      form.reset();
+    });
+  </script>
+</body>
+</html>
