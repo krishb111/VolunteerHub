@@ -1,29 +1,130 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <title>Admin - Post Activity</title>
   <style>
-    body { font-family: Arial; padding: 20px; }
-    input, textarea { display: block; width: 100%; margin-bottom: 10px; padding: 8px; }
-    button { padding: 10px 20px; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f8f8f8;
+      padding: 40px;
+      max-width: 800px;
+      margin: auto;
+    }
+
+    h2 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+
+    button {
+      padding: 10px 18px;
+      border: none;
+      background-color: #4CAF50;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-right: 8px;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    .card {
+      background: white;
+      padding: 16px;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+
+    .card h3 {
+      margin-top: 0;
+    }
+
+    .actions button {
+      background-color: #f44336;
+    }
+
+    .actions button.edit {
+      background-color: #2196F3;
+    }
+
+    .actions button:hover {
+      opacity: 0.9;
+    }
+
+    .hidden {
+      display: none;
+    }
   </style>
 </head>
 <body>
-  <h2>Post a Volunteer Opportunity</h2>
+  <h2>Admin Dashboard - Manage Volunteer Activities</h2>
+
   <form id="activityForm">
     <input type="text" id="name" placeholder="Activity Name" required />
     <input type="text" id="type" placeholder="Volunteer Type" required />
     <textarea id="description" placeholder="Description" required></textarea>
     <input type="text" id="requirements" placeholder="Requirements" />
     <input type="text" id="location" placeholder="Location" required />
-    <input type="url" id="applyLink" placeholder="Application Link (e.g. https://...)" required />
+    <input type="url" id="applyLink" placeholder="Application Link" required />
     <button type="submit">Post Activity</button>
   </form>
 
+  <button id="addNewBtn" class="hidden" onclick="resetForm()">+ Add New Activity</button>
+
+  <hr style="margin: 30px 0;">
+
+  <div id="activityList"></div>
+
   <script>
     const form = document.getElementById('activityForm');
-    form.addEventListener('submit', function (e) {
+    const activityList = document.getElementById('activityList');
+    const addNewBtn = document.getElementById('addNewBtn');
+    let editingIndex = -1;
+
+    function loadActivities() {
+      activityList.innerHTML = '';
+      const activities = JSON.parse(localStorage.getItem('activities')) || [];
+
+      activities.forEach((activity, index) => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <h3>${activity.name}</h3>
+          <p><strong>Type:</strong> ${activity.type}</p>
+          <p><strong>Description:</strong> ${activity.description}</p>
+          <p><strong>Requirements:</strong> ${activity.requirements}</p>
+          <p><strong>Location:</strong> ${activity.location}</p>
+          <a href="${activity.applyLink}" target="_blank">${activity.applyLink}</a>
+          <div class="actions" style="margin-top:10px;">
+            <button class="edit" onclick="editActivity(${index})">Edit</button>
+            <button onclick="deleteActivity(${index})">Delete</button>
+          </div>
+        `;
+        activityList.appendChild(card);
+      });
+    }
+
+    function saveActivities(activities) {
+      localStorage.setItem('activities', JSON.stringify(activities));
+      loadActivities();
+    }
+
+    form.addEventListener('submit', function(e) {
       e.preventDefault();
+
       const activity = {
         name: form.name.value,
         type: form.type.value,
@@ -33,14 +134,47 @@
         applyLink: form.applyLink.value
       };
 
-      // Store in localStorage
-      const existing = JSON.parse(localStorage.getItem('activities')) || [];
-      existing.push(activity);
-      localStorage.setItem('activities', JSON.stringify(existing));
+      let activities = JSON.parse(localStorage.getItem('activities')) || [];
 
-      alert('Activity posted!');
+      if (editingIndex > -1) {
+        activities[editingIndex] = activity;
+        editingIndex = -1;
+      } else {
+        activities.push(activity);
+      }
+
+      saveActivities(activities);
       form.reset();
+      addNewBtn.classList.remove('hidden');
     });
+
+    function editActivity(index) {
+      const activities = JSON.parse(localStorage.getItem('activities')) || [];
+      const a = activities[index];
+      form.name.value = a.name;
+      form.type.value = a.type;
+      form.description.value = a.description;
+      form.requirements.value = a.requirements;
+      form.location.value = a.location;
+      form.applyLink.value = a.applyLink;
+      editingIndex = index;
+      addNewBtn.classList.add('hidden');
+    }
+
+    function deleteActivity(index) {
+      let activities = JSON.parse(localStorage.getItem('activities')) || [];
+      activities.splice(index, 1);
+      saveActivities(activities);
+    }
+
+    function resetForm() {
+      form.reset();
+      editingIndex = -1;
+      addNewBtn.classList.add('hidden');
+    }
+
+    // Initial load
+    loadActivities();
   </script>
 </body>
 </html>
