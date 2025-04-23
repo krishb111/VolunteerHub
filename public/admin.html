@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin - Post Activity</title>
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; background: #f8f8f8; padding: 40px; max-width: 800px; margin: auto; }
+    h2 { color: #333; margin-bottom: 20px; }
+    input, textarea { width: 100%; padding: 10px; margin: 8px 0; border-radius: 6px; border: 1px solid #ccc; }
+    button { padding: 10px 18px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    button:hover { background-color: #45a049; }
+  </style>
+</head>
+<body>
+  <h2>Admin Dashboard - Post Volunteer Activity</h2>
+
+  <form id="activityForm">
+    <input type="text" id="name" placeholder="Activity Name" required />
+    <input type="text" id="type" placeholder="Volunteer Type" required />
+    <textarea id="description" placeholder="Description" required></textarea>
+    <input type="text" id="requirements" placeholder="Requirements" />
+    <input type="text" id="location" placeholder="Location" required />
+    <input type="url" id="applyLink" placeholder="Application Link" required />
+    <button type="submit">Post Activity</button>
+  </form>
+
+  <script>
+    const form = document.getElementById('activityForm');
+
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const activity = {
+        name: form.name.value,
+        type: form.type.value,
+        description: form.description.value,
+        requirements: form.requirements.value,
+        location: form.location.value,
+        applyLink: form.applyLink.value
+      };
+
+      try {
+        const res = await fetch('/add-activity', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(activity)
+        });
+
+        if (res.ok) {
+          alert('Activity posted successfully!');
+          form.reset();
+        } else {
+          alert('Failed to post activity.');
+        }
+      } catch (err) {
+        alert('Server error.');
+      }
+    });
+  </script>
+</body>
+</html>
